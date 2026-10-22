@@ -1,9 +1,114 @@
 <!DOCTYPE html>
-<html>
-<head><title>lab-web-01</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>lab-web-01 — The Home of Questionable Decisions</title>
+    <style>
+        body {
+            font-family: "Comic Sans MS", "Papyrus", cursive;
+            background: linear-gradient(135deg, #ffcc00, #ff6600, #cc0066);
+            color: #222;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            text-shadow: 3px 3px 0 #fff, 6px 6px 0 #000;
+            text-align: center;
+        }
+        .card {
+            background: #fffbe6;
+            border: 4px dashed #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem auto;
+            max-width: 700px;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+        }
+        marquee {
+            font-size: 1.2rem;
+            background: #000;
+            color: #0f0;
+            padding: 0.25rem;
+            display: block;
+        }
+        a {
+            color: #cc0066;
+            font-weight: bold;
+        }
+        .counter {
+            font-family: monospace;
+            font-size: 2rem;
+            background: #000;
+            color: #0f0;
+            padding: 0.5rem;
+            text-align: center;
+            border: 4px inset #888;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
 <body>
+    <marquee>🚨 WELCOME TO THE BEST WEBSITE ON THIS SERVER 🚨</marquee>
+
     <h1>lab-web-01</h1>
-    <p>Served by nginx</p>
-    <p><a href="/about.html">About</a></p>
+
+    <div class="card">
+        <h2>💾 What is this?</h2>
+        <p>
+            This is a <strong>hand-provisioned</strong> nginx server running on a Linode.
+            It has been hardened, firewalled, and documented by a human named Finn.
+            No Ansible. No Docker. No cloud magic. Just commands and consequences.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>📊 Totally Real Visitor Counter</h2>
+        <div class="counter" id="counter">000,001</div>
+        <p style="text-align:center;">
+            (This is fake. Real counters are a lie. Trust nothing.)
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>🛠️ Stack</h2>
+        <ul>
+            <li>OS: Ubuntu 22.04 LTS</li>
+            <li>Web server: nginx</li>
+            <li>Firewall: ufw (allowlist only)</li>
+            <li>SSH: key-only, no root</li>
+            <li>Sudo: passwordless for <code>finn</code></li>
+            <li>Automation: none yet. That's the point.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>🤔 FAQ</h2>
+        <p><strong>Q:</strong> Why is this page so ugly?</p>
+        <p><strong>A:</strong> Because <em>you</em> asked for goofy.</p>
+        <p><strong>Q:</strong> Is this production-ready?</p>
+        <p><strong>A:</strong> It's ready for <em>a</em> production. Which one is up to you.</p>
+        <p><strong>Q:</strong> Where's the database?</p>
+        <p><strong>A:</strong> Phase 3. Patience.</p>
+    </div>
+
+    <div class="card" style="text-align:center;">
+        <a href="/about.html">→ Read the About Page (spoiler: it's also goofy) →</a>
+    </div>
+
+    <footer>
+        <p>Built by hand. Broken on purpose. Documented in <code>NOTES.md</code>.</p>
+        <p>🐧 no penguins were harmed in the making of this server 🐧</p>
+    </footer>
+
+    <script>
+        // Fake counter that increments on every load
+        let n = Math.floor(Math.random() * 900000) + 100000;
+        document.getElementById('counter').textContent = n.toLocaleString();
+    </script>
 </body>
 </html>
