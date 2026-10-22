@@ -1,1 +1,62 @@
 
+### MYSQL SET-UP ###
+
+
+## Step 1 — Install MySQL Server
+
+$ sudo apt update
+$ sudo apt install -y mysql-server
+
+$ sudo systemctl status mysql
+
+
+## Step 2 — Secure the Installation
+
+$ sudo mysql_secure_installation
+
+
+## Step 3 — Create a Scoped Application Database and User
+
+$ sudo mysql
+
+~$ CREATE DATABASE labweb_db;
+~$ CREATE USER 'labweb_user'@'localhost' IDENTIFIED BY 'A-Strong-Passphrase-Here';
+~$ GRANT ALL PRIVILEGES ON labweb_db.* TO 'labweb_user'@'localhost';
+~$ FLUSH PRIVILEGES;
+~$ EXIT;
+
+$ mysql -u labweb_user -p -e "SHOW GRANTS;"
+
+
+## Step 4 — Bind MySQL to Localhost Only
+
+$ sudo ss -tlnp | grep 3306
+
+## Step 5 — Test the Connection
+
+$ mysql -u labweb_user -p -h 127.0.0.1 labweb_db
+
+
+### DUMP_FILE TESTING ###
+
+
+## Step 1 — Add random data in DB and create a dump file with it
+
+$ sudo mysql -e "CREATE dump_test_db;"
+*A .txt file with insert instructions is provided in the same git directory*
+
+mysqldump -u anakin -p dump_test_db > dump_test_db.sql
+
+$ grep "data" dump_test_db.sql       ## Test the mysql dump's contents
+$ head -40 dump_test_db.sql
+
+## Step 2 — Add the database back (names MUST match)
+
+$ sudo mysql -u <name> -p
+~$ DROP DATABASE dump_test_db;
+~$ CREATE DATABASE dump_test_db;
+~$ USE dump_test_db;
+
+## Step 3 — Redirect the output of the .sql file to the DB you just made
+
+$ sudo mysql -u <user> -p dump_test_db < dump_test_db.sql
