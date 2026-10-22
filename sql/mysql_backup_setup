@@ -1,0 +1,38 @@
+### SQL BACKUP ###
+
+## Step 1 - Allow passwordless login & Test mysqldump operation
+
+$ nano .my.cnf
+
+[client]
+user=<user>
+password=<password>
+
+$ chmod 600 .my.cnf
+
+Test passwordless login
+
+$ mysql -u <user>
+
+Test passwordless sqldumps
+
+$ mysqldumps -u <user> -h localhost --all-databases > /path/to_backup/dump_file.sql
+
+## Step 2 - Automate it via crontab
+
+Install rsync (for incremental backup + secure backup to external machines)
+
+$ sudo apt install rsync
+
+Create and edit the script file
+
+$ sudo nano /home/user/backup.sh
+
+mysqldumps -u <user> -h localhost --all-databases > /path/to_backup/dump_file.sql &&
+rsync -avz /path/to_backup/dump_file.sql host@ip:/path/to/backup/ 
+
+# -avz = archive, verbose, zip
+
+$ crontab - e
+
+0 12 * * * /path/to/script.sh  # Every day at 00:00
