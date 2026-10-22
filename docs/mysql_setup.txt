@@ -45,7 +45,7 @@ $ mysql -u labweb_user -p -h 127.0.0.1 labweb_db
 $ sudo mysql -e "CREATE dump_test_db;"
 *A .txt file with insert instructions is provided in the same git directory*
 
-mysqldump -u anakin -p dump_test_db > dump_test_db.sql
+mysqldump -u labweb_user -p dump_test_db > dump_test_db.sql
 
 $ grep "data" dump_test_db.sql       ## Test the mysql dump's contents
 $ head -40 dump_test_db.sql
@@ -59,4 +59,4 @@ $ sudo mysql -u <name> -p
 
 ## Step 3 — Redirect the output of the .sql file to the DB you just made
 
-$ sudo mysql -u <user> -p dump_test_db < dump_test_db.sql
+$ sudo mysql -u labweb_user -p dump_test_db < dump_test_db.sql
