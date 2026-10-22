@@ -1,1 +1,14 @@
+## Grafana Setup ##
 
+## Step 1 - Run & install grafana + ufw allow
+
+sudo apt install grafana
+
+sudo grafana server
+
+sudo ufw allow from <your-ip>/32 to any port 3000 proto tcp
+sudo ufw reload
+
+## Step 2 - Set data source to be Prometheus (http://localhost:9090)
+
+## Step 3 - Run any query you like and save them on your local machine
