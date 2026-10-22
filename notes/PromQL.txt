@@ -1,1 +1,22 @@
 
+1. CPU Usage (%)
+
+100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+
+2. Memory Usage (%)
+
+(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+
+3. Disk Usage (%)
+
+100 - ((node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay"}) * 100)
+
+4. Disk I/O Read/Write Rate (bytes/sec)
+
+rate(node_disk_read_bytes_total[5m])
+rate(node_disk_write_bytes_total[5m])
+
+5. Network In/Out (bytes/sec)
+
+rate(node_network_receive_bytes_total{device!~"lo|veth.*|docker.*"}[5m])
+rate(node_network_transmit_bytes_total{device!~"lo|veth.*|docker.*"}[5m])
