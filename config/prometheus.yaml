@@ -1,1 +1,20 @@
 
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+
+# 1. Prometheus itself (self-monitoring)
+- job_name: "prometheus"
+  static_configs:
+  - targets: [localhost:9090]
+
+# 2. Host metrics (CPU, RAM, Disk, Network) via Node Exporter
+- job_name: "node"
+  static_configs:
+  - targets: [localhost:9100]
+
+# 3. MySQL metrics via mysqld_exporter
+- job_name: "sql"
+  static_configs:
+  - targets: [localhost:9104]
