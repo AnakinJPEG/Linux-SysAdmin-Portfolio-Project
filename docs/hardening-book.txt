@@ -1,1 +1,115 @@
 
+# Hardening Runbook — lab-web-01
+
+**Date:** 2026-10-15
+**Target:** Ubuntu 22.04 LTS, Linode, 172.238.229.134
+**Author:** Anakian
+**Status:** Complete
+**Snapshot:** post-hardening
+
+## Threat Model
+
+What we're defending against:
+  - Automated SSH brute-force (solved: key-only auth)
+  - Known-user attacks (solved: no root SSH, named user only)
+  - Unpatched CVEs (solved: unattended-upgrades)
+  - Exposure of non-essential services (solved: UFW default-deny)
+  - Post-exploitation persistence (solved: sudoers.d scoped file)
+
+What we're NOT defending against (yet):
+  - DDoS (out of scope for single VM)
+  - Zero-day in SSH itself (mitigated by updates, not eliminated)
+  - Physical access to the Linode host (provider's responsibility)
+
+
+## Goal
+
+Transform a fresh Ubuntu VM into a minimally-secure baseline
+before deploying any services. This phase establishes:
+  - A named admin user (no root SSH)
+  - Key-only authentication
+  - Passwordless sudo scoped to that user
+  - A default-deny firewall
+  - Automatic security patches
+  - Correct timezone and hostname
+
+## Step 1 — Create admin user
+
+id finn &>/dev/null || useradd -m -s /bin/bash finn
+
+(i) Running as root directly is dangerous — a typo can destroy the
+  system, and it gives attackers a known username to target.
+  A named user provides accountability: every action in logs is
+  tied to a person.
+
+## Step 2 — Grant your user sudo privileges
+
+usermod -aG sudo finn
+groups finn
+
+(i) By adding the sudo group in your user's group list you have allowed them to assume the root level of control
+
+## Step 3 — Move the root keys to user-specific public keys and authorize finn:finn in home files (security)
+
+mkdir -p /home/finn/.ssh
+cat /root/.ssh/authorized_keys >> /home/finn/.ssh/authorized_keys
+chown -R finn:finn /home/finn/.ssh
+chmod 700 /home/finn/.ssh
+chmod 600 /home/finn/.ssh/authorized_keys
+
+(!) Explicidly permitting finn:finn via chmod on /home/finn/ files recursively is essential
+(!) Allowing only users to rwx the authorized_keys file adds an extra layer of protection as well as follows SSH requirements
+
+## Step 4 — Add user to sudoers.d
+
+visudo -f /etc/sudoers.d/finn
+|
+finn ALL=(ALL) NOPASSWD: ALL
+
+
+## Step 5 — Establish passwordless SSH
+
+ssh-copy-id -p 22 -i ~/.ssh/id_ed25519 finn@<linode-ip>
+ssh -p 22 finn@1<linode-ip>
+
+## Step 6 — Firewall
+
+  ufw default deny incoming
+  ufw default allow outgoing
+  ufw allow from <my-IP> to any port 22 proto tcp    # You could use port 2222 for extra safety (both handle SSH)
+  ufw allow from <my-IP> to any port 80 proto tcp    # Allow Nginx browser connections from myself (controler)
+  ufw allow from <my-IP> to any port 443 proto tcp   # Nginx after a Certificate has been activated
+  ufw enable
+
+(i) For security reasons I chose to allow ONLY my machine over TCP/22
+## WhY - When someone tries to SSH from an IP that isn't on the allowlist, the firewall drops the packet. The connection never reaches SSH.
+
+(i) Deny any inbound traffic and allow any outbound is standard procedure
+
+## Step 7 — Auto security updates
+
+sudo apt update
+sudo apt install -y unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+
+## Step 8 — Timezone & hostname
+
+sudo timedatectl set-timezone UTC
+sudo hostnamectl set-hostname lab-web-01
+
+## Step 9 — Verify
+
+# User and groups
+id finn
+
+# Sudo works without password
+sudo -n whoami
+
+# SSH config
+sshd -T | grep -E 'passwordauthentication|permitrootlogin'
+
+# Firewall
+ufw status
+
+# Automatic updates
+systemctl status unattended-upgrades
