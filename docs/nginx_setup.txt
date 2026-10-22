@@ -1,1 +1,62 @@
+# lab-web-01 — Nginx Setup Runbook
 
+## 1. Web Root
+
+sudo mkdir -p /var/www/lab-web-01/html
+sudo chown -R www-data:www-data /var/www/lab-web-01
+sudo chmod -R 755 /var/www/lab-web-01
+
+## 2. Site Content
+
+sudo nano /var/www/lab-web-01/html/index.html
+sudo nano /var/www/lab-web-01/html/about.html
+
+## 3. Fix Permissions
+
+sudo chown -R www-data:www-data /var/www/lab-web-01
+sudo find /var/www/lab-web-01 -type d -exec chmod 755 {} \;
+sudo find /var/www/lab-web-01 -type f -exec chmod 644 {} \;
+
+## 4. Site Config
+
+sudo nano /etc/nginx/sites-available/lab-web-01
+
+# Rate limit zone: 10 requests/sec per IP, 10 MB memory
+limit_req_zone $binary_remote_addr zone=labweb:10m rate=10r/s;
+
+## 5. Enable Site
+
+sudo ln -s /etc/nginx/sites-available/lab-web-01 /etc/nginx/sites-enabled/
+
+## 6. Disable Default Site
+
+sudo rm /etc/nginx/sites-enabled/default
+
+## 7. Test & Reload
+
+sudo nginx -t
+# nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+# nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+sudo systemctl reload nginx
+
+## 8. DoS Test
+
+for r in $(seq 1 50); do curl -s -o /dev/null -w "%{http_code}\n" http://172.238.229.134/ & done; wait
+
+## 9. SSL Setup
+
+(i) I chose to use a self-signed certificate, but you may choose otherwise ofc, no worriez
+
+sudo mkdir /etc/nginx/ssl
+sudo chmod 700 /etc/nginx/ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/nginx/ssl/example.key -out /etc/nginx/ssl/example.crt
+sudo chmod 600 /etc/nginx/ssl/example.key
+sudo chmod 644 /etc/nginx/ssl/example.crt
+
+sudo nginx -t
+sudo systemctl restart nginx
+
+## 10. SSL Test
+
+curl -kI https://172.238.229.134/        # -k ignores self-signed cert warning
