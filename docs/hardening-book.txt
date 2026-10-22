@@ -33,7 +33,7 @@ before deploying any services. This phase establishes:
   - Automatic security patches
   - Correct timezone and hostname
 
-## Step 1 — Create admin user
+## Step 1 — Create admin user (I chose "finn" — the hooman)
 
 id finn &>/dev/null || useradd -m -s /bin/bash finn
 
