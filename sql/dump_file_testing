@@ -1,0 +1,23 @@
+### DUMP_FILE TESTING ###
+
+
+## Step 1 — Add random data in DB and create a dump file with it
+
+$ sudo mysql -e "CREATE dump_test_db;"
+*A .txt file with insert instructions is provided in the same git directory*
+
+mysqldump -u anakin -p dump_test_db > dump_test_db.sql
+
+$ grep "data" dump_test_db.sql       ## Test the mysql dump's contents
+$ head -40 dump_test_db.sql
+
+## Step 2 — Add the database back (names MUST match)
+
+$ sudo mysql -u <name> -p
+~$ DROP DATABASE dump_test_db;
+~$ CREATE DATABASE dump_test_db;
+~$ USE dump_test_db;
+
+## Step 3 — Redirect the output of the .sql file to the DB you just made
+
+$ sudo mysql -u <user> -p dump_test_db < dump_test_db.sql
